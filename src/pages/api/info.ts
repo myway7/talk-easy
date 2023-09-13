@@ -35,7 +35,7 @@ export default async function handler(
     return res.status(500).json({ error: "Server misconfigured" });
   }
 
-  const livekitHost = wsUrl?.replace("wss://", "https://");
+   const livekitHost = process.env.NEXT_PUBLIC_LK_HTTP_URL!;
   const roomService = new RoomServiceClient(livekitHost, apiKey, apiSecret);
 
   try {
