@@ -37,7 +37,7 @@ export default async function handleToken(req: NextApiRequest, res: NextApiRespo
       return res.status(500).json({ error: "Server misconfigured" });
     }
   
-    const livekitHost = wsUrl?.replace("wss://", "https://");
+ const livekitHost = process.env.NEXT_PUBLIC_LK_HTTP_URL!;
 
     const roomService = new RoomServiceClient(livekitHost, apiKey, apiSecret);
     
