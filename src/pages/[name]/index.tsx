@@ -96,19 +96,25 @@ const fetchToken = useCallback(
             passwd: userChoices.passwd,
             roomName: roomName
         };
-        const response = await fetch(process.env.NEXT_PUBLIC_LK_TOKEN_ENDPOINT, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(body),
-        });
-        if (response.status === 200) {
-            const token = (await response.json()) as TokenResult;
-            setToken(token)
-            return token;
-        }
+        console.log("body------");
+        console.log(body)
+        // const response = await fetch(process.env.NEXT_PUBLIC_LK_TOKEN_ENDPOINT, {
+        //     method: "POST",
+        //     headers: { "Content-Type": "application/json" },
+        //     body: JSON.stringify(body),
+        // });
+        // if (response.status === 200) {
+        //     const token = (await response.json()) as TokenResult;
+        //     setToken(token)
+        //     return token;
+        // }
 
-        const { error } = await response.json();
-        throw error;
+        // const { error } = await response.json();
+        // throw error;
+      const response = await getToken(body);
+      const token =  response as TokenResult;
+      setToken(token)
+      return token;
     },
     [roomName]
 );
