@@ -6,11 +6,34 @@ import { roominfo$ } from "../lib/observe/RoomInfoObs";
 import { curState, curState$ } from "@/lib/observe/CurStateObs";
 import { useRoomInfo } from "@/lib/hooks/useRoomInfo";
 import { useTranslation } from "react-i18next";
+import { RoomServiceClient } from "livekit-server-sdk";
+import { RoomMetadata } from "@/lib/types";
+import { lru } from "@/lib/lru";
 
+async function getRoomInfo(roomName:string) {
+    console.log("get room")
+    const livekitHost = process.env.NEXT_PUBLIC_LK_HTTP_URL!;
+    const roomService = new RoomServiceClient(livekitHost, process.env.NEXT_PUBLIC_LIVEKIT_API_KE, process.env.NEXT_PUBLIC_LIVEKIT_API_SECRET);
+  
+    try {
+      const l: (RoomMetadata | undefined) = lru.get(roomName as string) as RoomMetadata | undefined
+      // for passwd debug
+      // if(l) console.log(`get passwd for ${roomName}, passwd: ${l.passwd}`)
+      const participants = await roomService.listParticipants(roomName as string);
+      // if(l) console.log(`get num_participants for ${roomName}`)
+      const needpass = (l && l.passwd !== "" && l.passwd !== undefined) ? true: false
+      const maxParticipants = l ? l.maxParticipants: 0
+      return { num_participants: participants.length, hasPasswd: needpass, maxParticipants: maxParticipants };
+    } catch(e) {
+      return { num_participants: 0, hasPasswd: false, maxParticipants: 0 };
+    }
+  }
 type Props = {
     roomName: string;
     join?: boolean
 };
+
+
 
 const DEFAULT_ROOM_INFO: RoomInfo = { num_participants: 0, hasPasswd: false, maxParticipants: 0 };
 
@@ -25,8 +48,8 @@ export function RoomInfo({ roomName, join }: Props) {
     }
     
     const fetchRoomInfo = useCallback(async () => {
-            const res = await fetch(`/api/info?roomName=${roomName}`);
-            const _roomInfo = (await res.json()) as RoomInfo;
+            const res = await getRoomInfo(roomName);
+            const _roomInfo = (await res) as RoomInfo;
             
             setRoomInfo(_roomInfo);
             if(_roomInfo.hasPasswd != roomInfo.hasPasswd){

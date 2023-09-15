@@ -18,6 +18,7 @@ import {PreJoin, LocalUserChoices} from "@/components/MyPreJoin";
 import { useServerUrl } from '../../lib/client-utils';
 import { log } from "@livekit/components-core"
 import { defaultAudioSetting, publishDefaults } from '@/lib/const';
+import { getToken } from '@/lib/get-token';
 import { TokenResult } from '@/lib/types';
 import { curState, curState$ } from '@/lib/observe/CurStateObs';
 import { WebAudioContext } from '@/lib/context/webAudioContex';
@@ -142,7 +143,8 @@ useEffect(()=>{
   const router = useRouter();
   const { region, hq } = router.query;
 
-  const liveKitUrl = useServerUrl(region as string | undefined);
+  // const liveKitUrl = useServerUrl(region as string | undefined);
+  const liveKitUrl = process.env.NEXT_PUBLIC_LIVEKIT_URL;
   
   const roomOptions = useMemo((): RoomOptions => {
     let setting: RoomOptions =  {

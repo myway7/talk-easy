@@ -6,9 +6,9 @@ import { TokenResult, RoomMetadata } from '../../lib/types';
 import { lru } from '@/lib/lru';
 import { error } from 'console';
 
-const apiKey = process.env.LIVEKIT_API_KEY;
-const apiSecret = process.env.LIVEKIT_API_SECRET;
-const wsUrl = process.env.LIVEKIT_URL;
+const apiKey = process.env.NEXT_PUBLIC_LIVEKIT_API_KEY;
+const apiSecret = process.env.NEXT_PUBLIC_LIVEKIT_API_SECRET;
+const wsUrl = process.env.NEXT_PUBLIC_LIVEKIT_URL;
 
 export const createToken = (userInfo: AccessTokenOptions, grant: VideoGrant) => {
   const at = new AccessToken(apiKey, apiSecret, userInfo);
@@ -18,9 +18,8 @@ export const createToken = (userInfo: AccessTokenOptions, grant: VideoGrant) => 
 };
 // TODO最后一个人离开房间时重置密码
 export default async function handleToken(req: NextApiRequest, res: NextApiResponse) {
-
     const { roomName, identity, name, passwd, metadata } = req.body;
-    // console.log({ roomName, identity, name, metadata } )
+    console.log({ roomName, identity, name, metadata } )
     if (typeof identity !== 'string' || typeof roomName !== 'string') {
       res.status(403).end();
       return;
